@@ -280,6 +280,45 @@ def choose(l,c):
         if get_left(x,y) == 0:
           f.enqueue([x,y-1])
 
+def add_around():
+  for x in range(5):
+    for y in range(5):
+      alt = False
+      #if x >= 0 and x < len(tab) and y >= 0 and y < len(tab[x]):
+      if tab[x][y] != 'L' and tab[x][y] != '*' and tab[x][y] != 'B':
+        if tab[x][y] > 0:
+          if x == 0: #limite cima
+            if y == 0:
+              if get_right(x,y) == 'L' or get_down(x,y) == 'L' or get_vir(x,y) == 'L':
+                alt = True
+            elif y == 4:
+              if get_left(x,y) == 'L' or get_down(x,y) == 'L' or get_vil(x+1,y-1) == 'L':
+                alt = True
+            else:
+              if get_left(x,y) == 'L' or  get_vil(x,y) == 'L' or get_down(x,y) == 'L' or get_vir(x,y) == 'L' or get_right(x,y) == 'L':
+                alt = True
+          elif x == 4: #limite baixo
+            if y == 0:
+              if get_up(x,y)  == 'L' or  get_vsr(x,y)  == 'L' or  get_right(x,y)  == 'L':
+                alt = True
+            elif y == 4:
+              if get_up(x,y)  == 'L' or  get_vsl(x,y)  == 'L' or  get_left(x,y)  == 'L':
+                alt = True
+            else:
+              if get_left(x,y)  == 'L' or  get_vsl(x,y)  == 'L' or  get_up(x,y)  == 'L' or  get_vsr(x,y)  == 'L' or  get_right(x,y)  == 'L':
+                alt = True
+          elif x > 0 and x < 4 and y == 0: #limite esq
+            if get_up(x,y)  == 'L' or  get_vsr(x,y)  == 'L' or   get_right(x,y)  == 'L' or   get_vir(x,y)  == 'L' or  get_down(x,y)  == 'L':
+              alt = True
+          elif x > 0 and x < 4 and y == 4: #limite dir
+            if get_up(x,y)  == 'L' or  get_vsl(x,y)  == 'L' or  get_left(x,y)  == 'L' or  get_vil(x,y)  == 'L' or  get_down(x,y)  == 'L':
+              alt = True
+          else:
+            if get_vsl(x,y)  == 'L' or  get_up(x,y)  == 'L' or  get_vsr(x,y)  == 'L' or   get_right(x,y)  == 'L' or  get_vir(x,y)  == 'L' or  get_down(x,y)  == 'L' or  get_vil(x,y)  == 'L' or  get_left(x,y)  == 'L':
+              alt = True
+      if alt:
+        tab[x][y] = tab[x][y] * -1
+
 def is_game_over():
   over = False
   for i in tab:
@@ -306,23 +345,32 @@ def is_end():
   else:
     return True
 
+def test():
+  for i in tab:
+    for j in i:
+      if j == 'B':
+        return True
+
 add_bombs(5)
 add_bomb_counts()
-show_tab_player()
+show_tab()
+#show_tab_player()
 
-while not is_game_over():
+while not is_end():
   print('Linha: ')
   x = int(input())
   print('Coluna: ')
   y = int(input())
   choose(x,y)
   os.system('cls' if os.name == 'nt' else 'clear')
+  add_around()
+  show_tab()
   show_tab_player()
-  if is_end():
+  if test():
     break
 
 print('Fim de jogo!')
-if(is_game_over()):
+if(is_end()):
   print('Você perdeu!')
 else:
   print('Você venceu!')
