@@ -8,7 +8,19 @@ from fila_array import *
 import os
 
 game_over = False
-tab = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]]
+tab = [[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0]]
+size_x = 9
+size_y = 9
+total_bombs = 10
 
 def get_vsl(x, y):
   return tab[x-1][y-1]
@@ -54,15 +66,15 @@ def add_bombs(n):
   for i in range(n):
     repeted = True
     while repeted:
-      x = randint(0,4)
-      y = randint(0,4)
+      x = randint(0,size_x)
+      y = randint(0,size_y)
       if tab[x][y] != '*':
         tab[x][y] = '*'
         repeted = False
 
 def add_bomb_counts():
-  for x in range(5):
-    for y in range(5):
+  for x in range(size_x+1):
+    for y in range(size_y+1):
       b = 0
       if x == 0 and tab[x][y] != '*': #limite cima
         if y == 0:
@@ -72,7 +84,7 @@ def add_bomb_counts():
             b += 1
           if get_vir(x,y) == '*':
             b += 1
-        elif y == 4:
+        elif y == size_y:
           if get_left(x,y) == '*':
             b += 1
           if get_down(x,y) == '*':
@@ -91,7 +103,7 @@ def add_bomb_counts():
           if get_right(x,y) == '*':
             b += 1
         tab[x][y] = b
-      elif x == 4 and tab[x][y] != '*': #limite baixo
+      elif x == size_x and tab[x][y] != '*': #limite baixo
         if y == 0:
           if get_up(x,y) == '*':
             b += 1
@@ -99,7 +111,7 @@ def add_bomb_counts():
             b += 1
           if get_right(x,y) == '*':
             b += 1
-        elif y == 4:
+        elif y == size_y:
           if get_up(x,y) == '*':
             b += 1
           if get_vsl(x,y) == '*':
@@ -118,7 +130,7 @@ def add_bomb_counts():
           if get_right(x,y) == '*':
             b += 1
         tab[x][y] = b
-      elif x > 0 and x < 4 and y == 0 and tab[x][y] != '*': #limite esq
+      elif x > 0 and x < size_x and y == 0 and tab[x][y] != '*': #limite esq
         if get_up(x,y) == '*':
           b += 1
         if get_vsr(x,y) == '*':
@@ -130,7 +142,7 @@ def add_bomb_counts():
         if get_down(x,y) == '*':
           b += 1
         tab[x][y] = b
-      elif x > 0 and x < 4 and y == 4 and tab[x][y] != '*': #limite dir
+      elif x > 0 and x < size_x and y == size_y and tab[x][y] != '*': #limite dir
         if get_up(x,y) == '*':
           b += 1
         if get_vsl(x,y) == '*':
@@ -196,7 +208,7 @@ def choose(l,c):
             f.enqueue([x+1,y])
           if get_vir(x,y) == 0:
             f.enqueue([x+1,y+1])
-        elif y == 4:
+        elif y == size_y:
           if get_left(x,y) == 0:
             f.enqueue([x,y-1])
           if get_down(x,y) == 0:
@@ -214,7 +226,7 @@ def choose(l,c):
             f.enqueue([x+1,y+1])
           if get_right(x,y) == 0:
             f.enqueue([x,y+1])
-      elif x == 4: #limite baixo
+      elif x == size_x: #limite baixo
         if y == 0:
           if get_up(x,y) == 0:
             f.enqueue([x-1,y])
@@ -222,7 +234,7 @@ def choose(l,c):
             f.enqueue([x-1,y+1])
           if get_right(x,y) == 0:
             f.enqueue([x,y+1])
-        elif y == 4:
+        elif y == size_y:
           if get_up(x,y) == 0:
             f.enqueue([x-1,y])
           if get_vsl(x,y) == 0:
@@ -240,7 +252,7 @@ def choose(l,c):
             f.enqueue([x-1,y+1])
           if get_right(x,y) == 0:
             f.enqueue([x,y+1])
-      elif x > 0 and x < 4 and y == 0: #limite esq
+      elif x > 0 and x < size_x and y == 0: #limite esq
         if get_up(x,y) == 0:
           f.enqueue([x-1,y])
         if get_vsr(x,y) == 0:
@@ -251,7 +263,7 @@ def choose(l,c):
           f.enqueue([x+1,y+1])
         if get_down(x,y) == 0:
           f.enqueue([x+1,y])
-      elif x > 0 and x < 4 and y == 4: #limite dir
+      elif x > 0 and x < size_x and y == size_y: #limite dir
         if get_up(x,y) == 0:
           f.enqueue([x-1,y])
         if get_vsl(x,y) == 0:
@@ -281,8 +293,8 @@ def choose(l,c):
           f.enqueue([x,y-1])
 
 def add_around():
-  for x in range(5):
-    for y in range(5):
+  for x in range(size_x+1):
+    for y in range(size_y+1):
       alt = False
       #if x >= 0 and x < len(tab) and y >= 0 and y < len(tab[x]):
       if tab[x][y] != 'L' and tab[x][y] != '*' and tab[x][y] != 'B':
@@ -291,26 +303,26 @@ def add_around():
             if y == 0:
               if get_right(x,y) == 'L' or get_down(x,y) == 'L' or get_vir(x,y) == 'L':
                 alt = True
-            elif y == 4:
+            elif y == size_y:
               if get_left(x,y) == 'L' or get_down(x,y) == 'L' or get_vil(x+1,y-1) == 'L':
                 alt = True
             else:
               if get_left(x,y) == 'L' or  get_vil(x,y) == 'L' or get_down(x,y) == 'L' or get_vir(x,y) == 'L' or get_right(x,y) == 'L':
                 alt = True
-          elif x == 4: #limite baixo
+          elif x == size_x: #limite baixo
             if y == 0:
               if get_up(x,y)  == 'L' or  get_vsr(x,y)  == 'L' or  get_right(x,y)  == 'L':
                 alt = True
-            elif y == 4:
+            elif y == size_y:
               if get_up(x,y)  == 'L' or  get_vsl(x,y)  == 'L' or  get_left(x,y)  == 'L':
                 alt = True
             else:
               if get_left(x,y)  == 'L' or  get_vsl(x,y)  == 'L' or  get_up(x,y)  == 'L' or  get_vsr(x,y)  == 'L' or  get_right(x,y)  == 'L':
                 alt = True
-          elif x > 0 and x < 4 and y == 0: #limite esq
+          elif x > 0 and x < size_x and y == 0: #limite esq
             if get_up(x,y)  == 'L' or  get_vsr(x,y)  == 'L' or   get_right(x,y)  == 'L' or   get_vir(x,y)  == 'L' or  get_down(x,y)  == 'L':
               alt = True
-          elif x > 0 and x < 4 and y == 4: #limite dir
+          elif x > 0 and x < size_x and y == size_y: #limite dir
             if get_up(x,y)  == 'L' or  get_vsl(x,y)  == 'L' or  get_left(x,y)  == 'L' or  get_vil(x,y)  == 'L' or  get_down(x,y)  == 'L':
               alt = True
           else:
@@ -351,10 +363,10 @@ def test():
       if j == 'B':
         return True
 
-add_bombs(5)
+add_bombs(total_bombs)
 add_bomb_counts()
-show_tab()
-#show_tab_player()
+#show_tab()
+show_tab_player()
 
 while not is_end():
   print('Linha: ')
@@ -364,13 +376,13 @@ while not is_end():
   choose(x,y)
   os.system('cls' if os.name == 'nt' else 'clear')
   add_around()
-  show_tab()
+  #show_tab()
   show_tab_player()
   if test():
     break
 
 print('Fim de jogo!')
 if(is_end()):
-  print('Você perdeu!')
-else:
   print('Você venceu!')
+else:
+  print('Você perdeu!')
